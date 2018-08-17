@@ -52,10 +52,10 @@ var (
 		},
 		{
 			Name:        "listTransactionsToAddress",
-			Aliases:     []string{"atx"},
-			Usage:       "Get transactions sent to a given address",
+			Aliases:     []string{"scan"},
+			Usage:       "List transactions sent to a given address",
 			UsageText:   "wanutil listTransactionsToAddress [options]",
-			Description: "Get the transactions sent to a given address, using an optional block number range",
+			Description: "List the transactions sent to a given address, using an optional block number range",
 			Action:      listTransactionsToAddress,
 			Flags:       []cli.Flag{addressFlag, blockFlag},
 		},
