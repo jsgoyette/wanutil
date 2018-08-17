@@ -158,7 +158,7 @@ func listTransactionsToAddress(c *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	for c := startingBlock; c < current.Int64(); c++ {
+	for c := startingBlock; c <= current.Int64(); c++ {
 
 		block, err := client.BlockByNumber(context.Background(), big.NewInt(c))
 		if err != nil {
