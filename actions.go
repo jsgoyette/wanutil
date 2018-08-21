@@ -244,3 +244,20 @@ func listAbiSignatures(c *cli.Context) error {
 
 	return nil
 }
+
+func validateAddress(c *cli.Context) error {
+	address := c.String("address")
+
+	if address == "" {
+		return cli.NewExitError("No address provided", 1)
+	}
+
+	if !common.IsHexAddress(address) {
+		fmt.Println("Address is INVALID")
+	} else {
+		addr := common.HexToAddress(address)
+		fmt.Printf("Valid address: %s\n", addr.Hex())
+	}
+
+	return nil
+}

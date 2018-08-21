@@ -7,9 +7,9 @@ import (
 	"math/big"
 	"strings"
 
-	// "github.com/ethereum/go-ethereum/ethclient"
 	"github.com/wanchain/go-wanchain/crypto"
 	wanclient "github.com/wanchain/go-wanchain/ethclient"
+	// "github.com/ethereum/go-ethereum/ethclient"
 
 	"github.com/spf13/viper"
 )
