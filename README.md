@@ -54,3 +54,8 @@ wanutil tx -hash ox48b53118a7ebaa8f1a587f12a1a1710dc38b578b6ef564b3b4caa2361551e
 ```
 wanutil scan -a 0xecb4e4073a9bf5e024ee68d1f871635f1888030e -b 1600000
 ```
+
+#### List contract method signatures for a given ABI
+```
+wanutil sig -abi ./contracts/wethhtlc.abi
+```
