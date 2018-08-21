@@ -85,14 +85,21 @@ func currentBlockNumber(client *wanclient.Client) (*big.Int, error) {
 }
 
 func printTransaction(tx *types.Transaction, from string, isPending bool) {
+	v, r, s := tx.RawSignatureValues()
+
 	fmt.Printf("Hash: %s\n", tx.Hash().Hex())
 	fmt.Printf("To: %s\n", tx.To().Hex())
 	fmt.Printf("From: %s\n", from)
+	fmt.Printf("TxType: 0x%x\n", tx.Txtype())
 	fmt.Printf("Value: %s\n", tx.Value().String())
 	fmt.Printf("Gas: %s\n", tx.Gas())
 	fmt.Printf("Gas Price: %d\n", tx.GasPrice().Uint64())
 	fmt.Printf("Nonce: %d\n", tx.Nonce())
+	fmt.Printf("Size: %s\n", tx.Size().String())
 	fmt.Printf("Data: %x\n", tx.Data())
+	fmt.Printf("V: 0x%x\n", v)
+	fmt.Printf("R: 0x%x\n", r)
+	fmt.Printf("S: 0x%x\n", s)
 	fmt.Printf("Pending: %v\n\n", isPending)
 }
 
