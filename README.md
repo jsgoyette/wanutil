@@ -30,24 +30,29 @@ vi ~/.wanutil/config.yml
 wanutil help
 ```
 
+#### Validate address checksum
+```
+wanutil validate -a 0xecb4e4073a9bf5e024ee68d1f871635f1888030e
+```
+
 #### Get WAN balance
 ```
-wanutil bal -a 0xecb4e4073a9bf5e024ee68d1f871635f1888030e
+wanutil balance -a 0xecb4e4073a9bf5e024ee68d1f871635f1888030e
 ```
 
 #### Get WAN balance at block number
 ```
-wanutil bal -a 0xecb4e4073a9bf5e024ee68d1f871635f1888030e -b 1600000
+wanutil balance -a 0xecb4e4073a9bf5e024ee68d1f871635f1888030e -b 1600000
 ```
 
 #### Get token balance
 ```
-wanutil bal -a 0xecb4e4073a9bf5e024ee68d1f871635f1888030e -t WETH
+wanutil balance -a 0xecb4e4073a9bf5e024ee68d1f871635f1888030e -t WETH
 ```
 
 #### Get transaction
 ```
-wanutil tx -hash ox48b53118a7ebaa8f1a587f12a1a1710dc38b578b6ef564b3b4caa2361551e368
+wanutil transaction -hash ox48b53118a7ebaa8f1a587f12a1a1710dc38b578b6ef564b3b4caa2361551e368
 ```
 
 #### Scan blockchain for transactions to an address, starting from block 1600000
@@ -57,5 +62,10 @@ wanutil scan -a 0xecb4e4073a9bf5e024ee68d1f871635f1888030e -b 1600000
 
 #### List contract method signatures for a given ABI
 ```
-wanutil sig -abi ./contracts/wethhtlc.abi
+wanutil abiSignatures -abi ./contracts/wethhtlc.abi
+```
+
+#### Subscribe to events for an address, starting from block 1600000
+```
+wanutil subscribe -a 0xecb4e4073a9bf5e024ee68d1f871635f1888030e -b 1600000
 ```
