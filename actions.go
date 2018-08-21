@@ -273,6 +273,7 @@ func listAbiSignatures(c *cli.Context) error {
 	}
 
 	signatures := map[string]string{}
+	inputNames := map[string]string{}
 
 	for _, field := range fields {
 		if field.Name == "" {
@@ -280,7 +281,10 @@ func listAbiSignatures(c *cli.Context) error {
 		}
 
 		sig, sigHash := buildSignature(&field)
-		signatures[sig] = sigHash
+		names := getInputNamesString(field.Inputs)
+
+		signatures[sigHash] = sig
+		inputNames[sigHash] = names
 	}
 
 	keys := make([]string, 0, len(signatures))
@@ -290,7 +294,7 @@ func listAbiSignatures(c *cli.Context) error {
 	sort.Strings(keys)
 
 	for _, k := range keys {
-		fmt.Printf("%-40s %s\n", k, signatures[k])
+		fmt.Printf("%s %s %s\n", k, signatures[k], inputNames[k])
 	}
 
 	return nil
