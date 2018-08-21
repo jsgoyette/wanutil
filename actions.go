@@ -239,6 +239,9 @@ func listTransactionsToAddress(c *cli.Context) error {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
+	fmt.Println("Block   | Hash")
+	fmt.Println(strings.Repeat("-", 76))
+
 	for c := startingBlock; c <= current.Int64(); c++ {
 
 		block, err := client.BlockByNumber(context.Background(), big.NewInt(c))
@@ -249,7 +252,7 @@ func listTransactionsToAddress(c *cli.Context) error {
 		for _, tx := range block.Transactions() {
 			txaddr := tx.To()
 			if txaddr != nil && address == txaddr.Hex() {
-				fmt.Printf("block: %7d hash: %s\n", c, tx.Hash().Hex())
+				fmt.Printf("%7d | %s\n", c, tx.Hash().Hex())
 			}
 		}
 	}
