@@ -119,17 +119,21 @@ func printReceipt(receipt *types.Receipt) {
 	fmt.Printf("Logs:\n")
 
 	for _, log := range receipt.Logs {
-		fmt.Printf("\tAddress: %s\n", log.Address.Hex())
-		fmt.Printf("\tBlock Hash: %s\n", log.BlockHash.Hex())
-		fmt.Printf("\tBlock Number: %d\n", log.BlockNumber)
-		fmt.Printf("\tRemoved: %v\n", log.Removed)
-		fmt.Printf("\tData: %x\n", log.Data)
-		fmt.Printf("\tTopics:\n")
-		for _, topic := range log.Topics {
-			fmt.Printf("\t\t%x\n", topic)
-		}
-		fmt.Println()
+		printLog(log)
 	}
+}
+
+func printLog(log *types.Log) {
+	fmt.Printf("\tAddress: %s\n", log.Address.Hex())
+	fmt.Printf("\tBlock Hash: %s\n", log.BlockHash.Hex())
+	fmt.Printf("\tBlock Number: %d\n", log.BlockNumber)
+	fmt.Printf("\tRemoved: %v\n", log.Removed)
+	fmt.Printf("\tData: %x\n", log.Data)
+	fmt.Printf("\tTopics:\n")
+	for _, topic := range log.Topics {
+		fmt.Printf("\t\t%x\n", topic)
+	}
+	fmt.Println()
 }
 
 func printMethod(method *AbiMethod) {
