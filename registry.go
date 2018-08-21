@@ -5,6 +5,11 @@ import (
 )
 
 var (
+	abiFileFlag = cli.StringFlag{
+		Name:  "abi",
+		Value: "",
+		Usage: "ABI file name",
+	}
 	addressFlag = cli.StringFlag{
 		Name:  "address, a",
 		Value: "",
@@ -58,6 +63,15 @@ var (
 			Description: "List the transactions sent to a given address, using an optional block number range",
 			Action:      listTransactionsToAddress,
 			Flags:       []cli.Flag{addressFlag, blockFlag},
+		},
+		{
+			Name:        "signatures",
+			Aliases:     []string{"sig"},
+			Usage:       "Get ABI method/event signatures",
+			UsageText:   "wanutil signatures [options]",
+			Description: "Get the signature hashes for the methods and events for a given ABI",
+			Action:      listAbiSignatures,
+			Flags:       []cli.Flag{abiFileFlag},
 		},
 	}
 )

@@ -4,11 +4,13 @@ import (
 	"context"
 	"fmt"
 	"math/big"
+	"sort"
 
 	"github.com/spf13/viper"
 	"github.com/urfave/cli"
 
 	"github.com/jsgoyette/wanutil/contracts"
+
 	"github.com/wanchain/go-wanchain/common"
 	wanclient "github.com/wanchain/go-wanchain/ethclient"
 )
@@ -171,6 +173,41 @@ func listTransactionsToAddress(c *cli.Context) error {
 				fmt.Printf("block: %7d hash: %s\n", c, tx.Hash().Hex())
 			}
 		}
+	}
+
+	return nil
+}
+
+func listAbiSignatures(c *cli.Context) error {
+	abiFileName := c.String("abi")
+	if abiFileName == "" {
+		return cli.NewExitError("ABI file path is required", 1)
+	}
+
+	fields, err := parseAbi(abiFileName)
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
+	signatures := map[string]string{}
+
+	for _, field := range fields {
+		if field.Name == "" {
+			continue
+		}
+
+		sig, sigHash := buildSignature(&field)
+		signatures[sig] = sigHash
+	}
+
+	keys := make([]string, 0, len(signatures))
+	for k := range signatures {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		fmt.Printf("%-40s %s\n", k, signatures[k])
 	}
 
 	return nil
