@@ -91,5 +91,14 @@ var (
 			Action:      validateAddress,
 			Flags:       []cli.Flag{addressFlag},
 		},
+		{
+			Name:        "subscribe",
+			Aliases:     []string{"sub"},
+			Usage:       "Subscribe to events for an address",
+			UsageText:   "wanutil subscribe [options]",
+			Description: "Subscribe to log events for a given address, starting from an optional block number",
+			Action:      subscribe,
+			Flags:       []cli.Flag{addressFlag, blockFlag},
+		},
 	}
 )

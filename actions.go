@@ -12,6 +12,7 @@ import (
 
 	"github.com/jsgoyette/wanutil/contracts"
 
+	wanchain "github.com/wanchain/go-wanchain"
 	"github.com/wanchain/go-wanchain/common"
 	"github.com/wanchain/go-wanchain/core/types"
 )
@@ -307,6 +308,41 @@ func validateAddress(c *cli.Context) error {
 	} else {
 		addr := common.HexToAddress(address)
 		fmt.Printf("Valid address: %s\n", addr.Hex())
+	}
+
+	return nil
+}
+
+func subscribe(c *cli.Context) error {
+	addrString := c.String("address")
+
+	if addrString == "" {
+		return cli.NewExitError("No address provided", 1)
+	}
+
+	client := getWanchainConnection()
+	startingBlock := c.Int64("block")
+
+	address := common.HexToAddress(addrString)
+	query := wanchain.FilterQuery{
+		FromBlock: big.NewInt(startingBlock),
+		Addresses: []common.Address{address},
+	}
+
+	logs := make(chan types.Log)
+
+	sub, err := client.SubscribeFilterLogs(context.Background(), query, logs)
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
+	for {
+		select {
+		case err := <-sub.Err():
+			return cli.NewExitError(err.Error(), 1)
+		case vLog := <-logs:
+			printLog(&vLog)
+		}
 	}
 
 	return nil
