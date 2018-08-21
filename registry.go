@@ -48,6 +48,7 @@ var (
 		},
 		{
 			Name:        "block",
+			Aliases:     []string{"blk"},
 			Usage:       "Get block",
 			UsageText:   "wanutil block [options]",
 			Description: "Fetch a block by blocknumber or hash",
@@ -66,9 +67,9 @@ var (
 		{
 			Name:        "transactionsToAddress",
 			Aliases:     []string{"scan"},
-			Usage:       "List transactions sent to a given address",
+			Usage:       "Scan blocks for transactions sent to a given address",
 			UsageText:   "wanutil listTransactionsToAddress [options]",
-			Description: "List the transactions sent to a given address, using an optional block number range.",
+			Description: "Scan blocks for transactions sent to a given address, using an optional block number range.",
 			Action:      listTransactionsToAddress,
 			Flags:       []cli.Flag{addressFlag, blockFlag},
 		},
@@ -82,8 +83,8 @@ var (
 			Flags:       []cli.Flag{abiFileFlag},
 		},
 		{
-			Name:        "validateAddress",
-			Aliases:     []string{"validate"},
+			Name:        "validate",
+			Aliases:     []string{"val"},
 			Usage:       "Validate address with checksum",
 			UsageText:   "wanutil validateAddress [options]",
 			Description: "Check that an address is valid and return with correct capitalizations based on checksum.",
