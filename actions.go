@@ -187,6 +187,39 @@ func getTransaction(c *cli.Context) error {
 	return nil
 }
 
+func getBlock(c *cli.Context) error {
+	blockNumber := c.Int64("block")
+	blockHash := c.String("hash")
+
+	if blockNumber == 0 && blockHash == "" {
+		return cli.NewExitError("Either block number or block hash must be provided", 1)
+	}
+	if blockNumber != 0 && blockHash != "" {
+		return cli.NewExitError("Ambiguous: only a block number or a block hash should be provided", 1)
+	}
+
+	client := getWanchainConnection()
+
+	var block *types.Block
+	var err error
+
+	if blockNumber != 0 {
+		block, err = client.BlockByNumber(context.Background(), big.NewInt(blockNumber))
+		if err != nil {
+			return cli.NewExitError(err.Error(), 1)
+		}
+	} else {
+		block, err = client.BlockByHash(context.Background(), common.HexToHash(blockHash))
+		if err != nil {
+			return cli.NewExitError(err.Error(), 1)
+		}
+	}
+
+	fmt.Println(block)
+
+	return nil
+}
+
 func listTransactionsToAddress(c *cli.Context) error {
 	address := c.String("address")
 

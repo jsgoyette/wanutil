@@ -38,25 +38,33 @@ var (
 
 	commands = []cli.Command{
 		{
-			Name:        "getBalance",
+			Name:        "balance",
 			Aliases:     []string{"bal"},
 			Usage:       "Get address balance",
-			UsageText:   "wanutil getBalance [options]",
+			UsageText:   "wanutil balance [options]",
 			Description: "Get the balance or token balance for an address. To get the token balance, make sure to set the token address in your config file.",
 			Action:      getBalance,
 			Flags:       []cli.Flag{addressFlag, blockFlag, tokenFlag},
 		},
 		{
-			Name:        "getTransaction",
+			Name:        "block",
+			Usage:       "Get block",
+			UsageText:   "wanutil block [options]",
+			Description: "Fetch a block by blocknumber or hash",
+			Action:      getBlock,
+			Flags:       []cli.Flag{blockFlag, hashFlag},
+		},
+		{
+			Name:        "transaction",
 			Aliases:     []string{"tx"},
 			Usage:       "Get transaction by hash",
-			UsageText:   "wanutil getTransaction [options]",
+			UsageText:   "wanutil transaction [options]",
 			Description: "Get transaction details and receipt. If it is to a recognized smart contract (in your config file) it will also try to parse the input.",
 			Action:      getTransaction,
 			Flags:       []cli.Flag{abiFileFlag, hashFlag},
 		},
 		{
-			Name:        "listTransactionsToAddress",
+			Name:        "transactionsToAddress",
 			Aliases:     []string{"scan"},
 			Usage:       "List transactions sent to a given address",
 			UsageText:   "wanutil listTransactionsToAddress [options]",
