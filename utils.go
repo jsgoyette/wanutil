@@ -9,6 +9,7 @@ import (
 	"math/big"
 	"strings"
 
+	"github.com/wanchain/go-wanchain/accounts/abi"
 	"github.com/wanchain/go-wanchain/core/types"
 	"github.com/wanchain/go-wanchain/crypto"
 	wanclient "github.com/wanchain/go-wanchain/ethclient"
@@ -84,6 +85,14 @@ func currentBlockNumber(client *wanclient.Client) (*big.Int, error) {
 	return latestBlock.Number(), nil
 }
 
+func getInputNamesString(inputs []abi.Argument) string {
+	inputNames := make([]string, len(inputs))
+	for i, input := range inputs {
+		inputNames[i] = input.Name
+	}
+	return strings.Join(inputNames, ", ")
+}
+
 func printTransaction(tx *types.Transaction, from string, isPending bool) {
 	v, r, s := tx.RawSignatureValues()
 
@@ -124,28 +133,20 @@ func printReceipt(receipt *types.Receipt) {
 }
 
 func printMethod(method *AbiMethod) {
-	inputNames := make([]string, len(method.Inputs))
-	for i, input := range method.Inputs {
-		inputNames[i] = input.Name
-	}
-	inputString := strings.Join(inputNames, ", ")
+	inputNames := getInputNamesString(method.Inputs)
 
 	fmt.Println("Method:", method.Name)
 	fmt.Println("Signature:", method.Signature)
-	fmt.Println("Inputs:", inputString)
+	fmt.Println("Inputs:", inputNames)
 	fmt.Println()
 }
 
 func printEvent(address string, method *AbiMethod) {
-	inputNames := make([]string, len(method.Inputs))
-	for i, input := range method.Inputs {
-		inputNames[i] = input.Name
-	}
-	inputString := strings.Join(inputNames, ", ")
+	inputNames := getInputNamesString(method.Inputs)
 
 	fmt.Println("Event:", method.Name)
 	fmt.Println("Address:", address)
 	fmt.Println("Signature:", method.Signature)
-	fmt.Println("Inputs:", inputString)
+	fmt.Println("Inputs:", inputNames)
 	fmt.Println()
 }
