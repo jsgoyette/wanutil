@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/big"
 	"sort"
+	"strings"
 
 	"github.com/spf13/viper"
 	"github.com/urfave/cli"
@@ -12,19 +13,10 @@ import (
 	"github.com/jsgoyette/wanutil/contracts"
 
 	"github.com/wanchain/go-wanchain/common"
-	wanclient "github.com/wanchain/go-wanchain/ethclient"
+	"github.com/wanchain/go-wanchain/core/types"
 )
 
 var ZERO = big.NewInt(0)
-
-func currentBlockNumber(client *wanclient.Client) (*big.Int, error) {
-	latestBlock, err := client.BlockByNumber(context.Background(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return latestBlock.Number(), nil
-}
 
 func getBalance(c *cli.Context) error {
 
@@ -104,32 +96,72 @@ func getBalance(c *cli.Context) error {
 }
 
 func getTransaction(c *cli.Context) error {
-	hash := c.String("hash")
+	hexHash := c.String("hash")
 	abiFileName := c.String("abi")
 
-	if hash == "" {
+	if hexHash == "" {
 		return cli.NewExitError("No tx hash provided", 1)
 	}
 
 	client := getWanchainConnection()
-	chash := common.HexToHash(hash)
+	networkId, _ := client.NetworkID(context.Background())
+
+	hash := common.HexToHash(hexHash)
+	signer := types.NewEIP155Signer(networkId)
+
+	methods := map[string]AbiMethod{}
+	var from string
 
 	tx, isPending, err := client.TransactionByHash(
 		context.Background(),
-		chash,
+		hash,
 	)
 
 	if err != nil {
 		return cli.NewExitError(err.Error(), 1)
 	}
 
-	fmt.Printf("Transaction:\n%+v\n", tx)
-	fmt.Printf("Pending: %v\n\n", isPending)
+	if msg, err := tx.AsMessage(signer); err == nil {
+		from = msg.From().Hex()
+	}
+
+	printTransaction(tx, from, isPending)
+
+	if abiFileName != "" {
+
+		fields, err := parseAbi(abiFileName)
+		if err != nil {
+			return cli.NewExitError(err.Error(), 1)
+		}
+
+		for _, field := range fields {
+			if field.Name == "" {
+				continue
+			}
+
+			sig, sigHash := buildSignature(&field)
+			methods[sigHash] = AbiMethod{
+				AbiField:      field,
+				Signature:     sig,
+				SignatureHash: sigHash,
+			}
+		}
+
+		txData := "0x" + fmt.Sprintf("%x", tx.Data())
+		if txData != "" {
+			for k := range methods {
+				if strings.Contains(txData, k[:10]) {
+					method := methods[k]
+					printMethod(&method)
+				}
+			}
+		}
+	}
 
 	if !isPending {
 		receipt, err := client.TransactionReceipt(
 			context.Background(),
-			chash,
+			hash,
 		)
 
 		if err != nil {
@@ -138,36 +170,18 @@ func getTransaction(c *cli.Context) error {
 
 		if abiFileName != "" {
 
-			fields, err := parseAbi(abiFileName)
-			if err != nil {
-				return cli.NewExitError(err.Error(), 1)
-			}
-
-			signatures := map[string]string{}
-
-			for _, field := range fields {
-				if field.Name == "" {
-					continue
-				}
-
-				_, sigHash := buildSignature(&field)
-				signatures[sigHash] = field.Name
-			}
-
 			for _, rlog := range receipt.Logs {
 				if len(rlog.Topics) == 0 {
 					continue
 				}
 
-				if name, ok := signatures[rlog.Topics[0].String()]; ok {
-					fmt.Println("Method/Event:", name)
-					fmt.Println("Address:", rlog.Address.Hex())
-					fmt.Println()
+				if method, ok := methods[rlog.Topics[0].String()]; ok {
+					printEvent(rlog.Address.Hex(), &method)
 				}
 			}
 		}
 
-		fmt.Printf("Receipt:\n%+v\n", receipt)
+		printReceipt(receipt)
 	}
 
 	return nil

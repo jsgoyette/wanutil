@@ -13,3 +13,9 @@ type AbiField struct {
 	Inputs    []abi.Argument
 	Outputs   []abi.Argument
 }
+
+type AbiMethod struct {
+	AbiField
+	Signature     string
+	SignatureHash string
+}
