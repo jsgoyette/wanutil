@@ -105,6 +105,7 @@ func getBalance(c *cli.Context) error {
 
 func getTransaction(c *cli.Context) error {
 	hash := c.String("hash")
+	abiFileName := c.String("abi")
 
 	if hash == "" {
 		return cli.NewExitError("No tx hash provided", 1)
@@ -133,6 +134,37 @@ func getTransaction(c *cli.Context) error {
 
 		if err != nil {
 			return cli.NewExitError(err.Error(), 1)
+		}
+
+		if abiFileName != "" {
+
+			fields, err := parseAbi(abiFileName)
+			if err != nil {
+				return cli.NewExitError(err.Error(), 1)
+			}
+
+			signatures := map[string]string{}
+
+			for _, field := range fields {
+				if field.Name == "" {
+					continue
+				}
+
+				_, sigHash := buildSignature(&field)
+				signatures[sigHash] = field.Name
+			}
+
+			for _, rlog := range receipt.Logs {
+				if len(rlog.Topics) == 0 {
+					continue
+				}
+
+				if name, ok := signatures[rlog.Topics[0].String()]; ok {
+					fmt.Println("Method/Event:", name)
+					fmt.Println("Address:", rlog.Address.Hex())
+					fmt.Println()
+				}
+			}
 		}
 
 		fmt.Printf("Receipt:\n%+v\n", receipt)

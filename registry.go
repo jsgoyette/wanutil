@@ -53,7 +53,7 @@ var (
 			UsageText:   "wanutil getTransaction [options]",
 			Description: "Get transaction details and receipt. If it is to a recognized smart contract (in your config file) it will also try to parse the input.",
 			Action:      getTransaction,
-			Flags:       []cli.Flag{hashFlag},
+			Flags:       []cli.Flag{abiFileFlag, hashFlag},
 		},
 		{
 			Name:        "listTransactionsToAddress",
