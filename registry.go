@@ -66,11 +66,20 @@ var (
 		},
 		{
 			Name:        "transactionsToAddress",
-			Aliases:     []string{"scan"},
+			Aliases:     []string{"scan-to"},
 			Usage:       "Scan blocks for transactions sent to a given address",
-			UsageText:   "wanutil listTransactionsToAddress [options]",
+			UsageText:   "wanutil transactionsToAddress [options]",
 			Description: "Scan blocks for transactions sent to a given address, using an optional block number range.",
 			Action:      listTransactionsToAddress,
+			Flags:       []cli.Flag{addressFlag, blockFlag},
+		},
+		{
+			Name:        "transactionsFromAddress",
+			Aliases:     []string{"scan-from"},
+			Usage:       "Scan blocks for transactions sent from a given address",
+			UsageText:   "wanutil transactionsFromAddress [options]",
+			Description: "Scan blocks for transactions sent from a given address, using an optional block number range.",
+			Action:      listTransactionsFromAddress,
 			Flags:       []cli.Flag{addressFlag, blockFlag},
 		},
 		{

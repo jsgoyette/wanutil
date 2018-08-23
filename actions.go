@@ -222,6 +222,14 @@ func getBlock(c *cli.Context) error {
 }
 
 func listTransactionsToAddress(c *cli.Context) error {
+	return scanBlockTransactions(c, "to")
+}
+
+func listTransactionsFromAddress(c *cli.Context) error {
+	return scanBlockTransactions(c, "from")
+}
+
+func scanBlockTransactions(c *cli.Context, direction string) error {
 	address := c.String("address")
 
 	if address == "" {
@@ -229,6 +237,9 @@ func listTransactionsToAddress(c *cli.Context) error {
 	}
 
 	client := getWanchainConnection()
+	networkId, _ := client.NetworkID(context.Background())
+	signer := types.NewEIP155Signer(networkId)
+
 	startingBlock := c.Int64("block")
 
 	if startingBlock == 0 {
@@ -251,7 +262,17 @@ func listTransactionsToAddress(c *cli.Context) error {
 		}
 
 		for _, tx := range block.Transactions() {
-			txaddr := tx.To()
+			var txaddr *common.Address
+
+			if direction == "to" {
+				txaddr = tx.To()
+			} else if direction == "from" {
+				if msg, err := tx.AsMessage(signer); err == nil {
+					from := msg.From()
+					txaddr = &from
+				}
+			}
+
 			if txaddr != nil && address == txaddr.Hex() {
 				fmt.Printf("%7d | %s\n", c, tx.Hash().Hex())
 			}
