@@ -55,9 +55,14 @@ wanutil balance -a 0xecb4e4073a9bf5e024ee68d1f871635f1888030e -t WETH
 wanutil transaction -hash 0x48b53118a7ebaa8f1a587f12a1a1710dc38b578b6ef564b3b4caa2361551e368
 ```
 
-#### Scan blockchain for transactions to an address, starting from block 1600000
+#### Scan blockchain for transactions sent to an address, starting from block 1600000
 ```
-wanutil scan -a 0xecb4e4073a9bf5e024ee68d1f871635f1888030e -b 1600000
+wanutil scan-to -a 0xecb4e4073a9bf5e024ee68d1f871635f1888030e -b 1600000
+```
+
+#### Scan blockchain for transactions sent from an address, starting from block 1600000
+```
+wanutil scan-from -a 0xecb4e4073a9bf5e024ee68d1f871635f1888030e -b 1600000
 ```
 
 #### List contract method/event signatures for a given ABI
