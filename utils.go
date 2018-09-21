@@ -97,7 +97,9 @@ func printTransaction(tx *types.Transaction, from string, isPending bool) {
 	v, r, s := tx.RawSignatureValues()
 
 	fmt.Printf("Hash: %s\n", tx.Hash().Hex())
-	fmt.Printf("To: %s\n", tx.To().Hex())
+	if tx.To() != nil {
+		fmt.Printf("To: %s\n", tx.To().Hex())
+	}
 	fmt.Printf("From: %s\n", from)
 	fmt.Printf("TxType: 0x%x\n", tx.Txtype())
 	fmt.Printf("Value: %s\n", tx.Value().String())
