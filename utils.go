@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"math/big"
+	"path/filepath"
 	"strings"
 
 	"github.com/wanchain/go-wanchain/accounts/abi"
@@ -46,13 +47,23 @@ func parseAbi(abiFileName string) ([]AbiField, error) {
 		return nil, err
 	}
 
-	fields := []AbiField{}
+	if filepath.Ext(abiFileName) == ".json" {
 
-	if err := json.Unmarshal(abiBytes, &fields); err != nil {
-		return nil, err
+		contract := struct{ Abi []AbiField }{}
+		if err := json.Unmarshal(abiBytes, &contract); err != nil {
+			return nil, err
+		}
+
+		return contract.Abi, nil
+	} else {
+
+		fields := []AbiField{}
+		if err := json.Unmarshal(abiBytes, &fields); err != nil {
+			return nil, err
+		}
+
+		return fields, nil
 	}
-
-	return fields, nil
 }
 
 func buildSignature(f *AbiField) (string, string) {
