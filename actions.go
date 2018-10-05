@@ -179,7 +179,7 @@ func getTransaction(c *cli.Context) error {
 				}
 
 				if method, ok := methods[rlog.Topics[0].String()]; ok {
-					printEvent(rlog.Address.Hex(), &method)
+					printEvent(rlog.Address.Hex(), &method, rlog)
 				}
 			}
 		}

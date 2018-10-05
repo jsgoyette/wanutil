@@ -170,19 +170,14 @@ func printMethod(method *AbiMethod, data []byte) {
 	fmt.Println("Method:", method.Name)
 	fmt.Println("Signature:", method.Signature)
 	fmt.Println("Inputs:", inputNames)
+	fmt.Printf("Values:")
 
 	for i, input := range method.Inputs {
 		pos := i * 32
 		value := data[pos : pos+32]
 
 		switch input.Type.String() {
-		case "int":
-		case "uint":
-		case "uint8":
-		case "uint16":
-		case "uint32":
-		case "uint64":
-		case "uint256":
+		case "int", "int8", "int16", "int32", "int64", "int256", "uint", "uint8", "uint16", "uint32", "uint64", "uint256":
 			valueInt, _ := parseBig256("0x" + hex.EncodeToString(value))
 			fmt.Printf("\t%v = %v\n", input.Name, valueInt)
 		case "address":
@@ -195,13 +190,37 @@ func printMethod(method *AbiMethod, data []byte) {
 	fmt.Println()
 }
 
-func printEvent(address string, method *AbiMethod) {
+func printEvent(address string, method *AbiMethod, log *types.Log) {
 	inputNames := getInputNamesString(method.Inputs)
 
 	fmt.Println("Event:", method.Name)
 	fmt.Println("Address:", address)
 	fmt.Println("Signature:", method.Signature)
 	fmt.Println("Inputs:", inputNames)
+	fmt.Printf("Values:")
+
+	for i, input := range method.Inputs {
+
+		var value []byte
+
+		if i < len(log.Topics)-1 {
+			value = log.Topics[i+1].Bytes()
+		} else {
+			pos := (i - len(log.Topics) + 1) * 32
+			value = log.Data[pos : pos+32]
+		}
+
+		switch input.Type.String() {
+		case "int", "int8", "int16", "int32", "int64", "int256", "uint", "uint8", "uint16", "uint32", "uint64", "uint256":
+			valueInt, _ := parseBig256("0x" + hex.EncodeToString(value))
+			fmt.Printf("\t%v = %v\n", input.Name, valueInt)
+		case "address":
+			fmt.Printf("\t%v = 0x%x\n", input.Name, value[12:])
+		default:
+			fmt.Printf("\t%v = 0x%x\n", input.Name, value)
+		}
+	}
+
 	fmt.Println()
 }
 
