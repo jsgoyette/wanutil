@@ -118,10 +118,24 @@ func printTransaction(tx *types.Transaction, from string, isPending bool) {
 	fmt.Printf("Gas Price: %d\n", tx.GasPrice().Uint64())
 	fmt.Printf("Nonce: %d\n", tx.Nonce())
 	fmt.Printf("Size: %s\n", tx.Size().String())
-	fmt.Printf("Data: %x\n", tx.Data())
+
+	data := tx.Data()
+
+	if len(data) >= 4 {
+		fmt.Printf("Data: %x\n", data[:4])
+
+		b := 4
+		for len(data) >= b+32 {
+			fmt.Printf("      %x\n", data[b:b+32])
+			b = b + 32
+		}
+	} else {
+		fmt.Printf("Data: %x\n", tx.Data())
+	}
+
 	fmt.Printf("V: 0x%x\n", v)
 	fmt.Printf("R: 0x%x\n", r)
-	fmt.Printf("S: 0x%x\n", s)
+	fmt.Printf("S: 0x%x\n\n", s)
 	fmt.Printf("Pending: %v\n\n", isPending)
 }
 
