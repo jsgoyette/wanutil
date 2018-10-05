@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -163,12 +164,34 @@ func printLog(log *types.Log) {
 	fmt.Println()
 }
 
-func printMethod(method *AbiMethod) {
+func printMethod(method *AbiMethod, data []byte) {
 	inputNames := getInputNamesString(method.Inputs)
 
 	fmt.Println("Method:", method.Name)
 	fmt.Println("Signature:", method.Signature)
 	fmt.Println("Inputs:", inputNames)
+
+	for i, input := range method.Inputs {
+		pos := i * 32
+		value := data[pos : pos+32]
+
+		switch input.Type.String() {
+		case "int":
+		case "uint":
+		case "uint8":
+		case "uint16":
+		case "uint32":
+		case "uint64":
+		case "uint256":
+			valueInt, _ := parseBig256("0x" + hex.EncodeToString(value))
+			fmt.Printf("\t%v = %v\n", input.Name, valueInt)
+		case "address":
+			fmt.Printf("\t%v = 0x%x\n", input.Name, value[12:])
+		default:
+			fmt.Printf("\t%v = 0x%x\n", input.Name, value)
+		}
+	}
+
 	fmt.Println()
 }
 
@@ -180,4 +203,22 @@ func printEvent(address string, method *AbiMethod) {
 	fmt.Println("Signature:", method.Signature)
 	fmt.Println("Inputs:", inputNames)
 	fmt.Println()
+}
+
+// from https://github.com/ethereum/go-ethereum/blob/master/common/math/big.go
+func parseBig256(s string) (*big.Int, bool) {
+	if s == "" {
+		return new(big.Int), true
+	}
+	var bigint *big.Int
+	var ok bool
+	if len(s) >= 2 && (s[:2] == "0x" || s[:2] == "0X") {
+		bigint, ok = new(big.Int).SetString(s[2:], 16)
+	} else {
+		bigint, ok = new(big.Int).SetString(s, 10)
+	}
+	if ok && bigint.BitLen() > 256 {
+		bigint, ok = nil, false
+	}
+	return bigint, ok
 }

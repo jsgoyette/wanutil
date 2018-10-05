@@ -148,12 +148,14 @@ func getTransaction(c *cli.Context) error {
 			}
 		}
 
-		txData := "0x" + fmt.Sprintf("%x", tx.Data())
-		if txData != "" {
+		txData := tx.Data()
+		txDataStr := fmt.Sprintf("%x", txData)
+
+		if txDataStr != "" {
 			for k := range methods {
-				if strings.Contains(txData, k[:10]) {
+				if strings.Contains(txDataStr, k[2:10]) {
 					method := methods[k]
-					printMethod(&method)
+					printMethod(&method, txData[4:])
 				}
 			}
 		}
