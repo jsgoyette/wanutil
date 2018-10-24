@@ -232,7 +232,7 @@ func listTransactionsFromAddress(c *cli.Context) error {
 }
 
 func scanBlockTransactions(c *cli.Context, direction string) error {
-	address := c.String("address")
+	address := strings.ToLower(c.String("address"))
 
 	if address == "" {
 		return cli.NewExitError("No address provided", 1)
@@ -268,6 +268,20 @@ func scanBlockTransactions(c *cli.Context, direction string) error {
 
 			if direction == "to" {
 				txaddr = tx.To()
+
+				// check receipt contract address
+				if txaddr == nil {
+
+					receipt, err := client.TransactionReceipt(
+						context.Background(),
+						tx.Hash(),
+					)
+					if err != nil {
+						return cli.NewExitError(err.Error(), 1)
+					}
+
+					txaddr = &receipt.ContractAddress
+				}
 			} else if direction == "from" {
 				if msg, err := tx.AsMessage(signer); err == nil {
 					from := msg.From()
@@ -275,7 +289,7 @@ func scanBlockTransactions(c *cli.Context, direction string) error {
 				}
 			}
 
-			if txaddr != nil && address == txaddr.Hex() {
+			if txaddr != nil && address == strings.ToLower(txaddr.Hex()) {
 				fmt.Printf("%7d | %s\n", c, tx.Hash().Hex())
 			}
 		}
