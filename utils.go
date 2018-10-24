@@ -143,6 +143,7 @@ func printTransaction(tx *types.Transaction, from string, isPending bool) {
 func printReceipt(receipt *types.Receipt) {
 	fmt.Printf("Status: %d\n", receipt.Status)
 	fmt.Printf("Cumulative Gas Used: %s\n", receipt.CumulativeGasUsed.String())
+	fmt.Printf("Contract Address: %x\n", receipt.ContractAddress)
 	fmt.Printf("Bloom: %x\n", receipt.Bloom)
 	fmt.Printf("Logs:\n")
 
