@@ -130,6 +130,10 @@ func printTransaction(tx *types.Transaction, from string, isPending bool) {
 			fmt.Printf("      %x\n", data[b:b+32])
 			b = b + 32
 		}
+
+		if len(data) > b {
+			fmt.Printf("      %x\n", data[b:])
+		}
 	} else {
 		fmt.Printf("Data: %x\n", tx.Data())
 	}
