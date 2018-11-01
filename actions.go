@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/hex"
 	"fmt"
 	"math/big"
 	"sort"
@@ -15,6 +16,7 @@ import (
 	wanchain "github.com/wanchain/go-wanchain"
 	"github.com/wanchain/go-wanchain/common"
 	"github.com/wanchain/go-wanchain/core/types"
+	"github.com/wanchain/go-wanchain/rlp"
 )
 
 var ZERO = big.NewInt(0)
@@ -385,6 +387,36 @@ func subscribe(c *cli.Context) error {
 			printLog(&vLog)
 		}
 	}
+
+	return nil
+}
+
+func decodeTransaction(c *cli.Context) error {
+	hexString := c.String("hex")
+
+	if hexString == "" {
+		return cli.NewExitError("No hex string provided", 1)
+	}
+
+	var tx *types.Transaction
+	var from string
+
+	rawtx, err := hex.DecodeString(hexString)
+	if err != nil {
+		return cli.NewExitError(err.Error(), 1)
+	}
+
+	rlp.DecodeBytes(rawtx, &tx)
+
+	client := getWanchainConnection()
+	networkId, _ := client.NetworkID(context.Background())
+	signer := types.NewEIP155Signer(networkId)
+
+	if msg, err := tx.AsMessage(signer); err == nil {
+		from = msg.From().Hex()
+	}
+
+	printTransaction(tx, from, false)
 
 	return nil
 }

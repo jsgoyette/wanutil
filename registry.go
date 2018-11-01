@@ -30,6 +30,11 @@ var (
 		Value: "",
 		Usage: "Hash string",
 	}
+	hexFlag = cli.StringFlag{
+		Name:  "hex",
+		Value: "",
+		Usage: "Hex string",
+	}
 	tokenFlag = cli.StringFlag{
 		Name:  "token, t",
 		Value: "",
@@ -81,6 +86,15 @@ var (
 			Description: "Scan blocks for transactions sent from a given address, using an optional block number range.",
 			Action:      listTransactionsFromAddress,
 			Flags:       []cli.Flag{addressFlag, blockFlag},
+		},
+		{
+			Name:        "decodeTransaction",
+			Aliases:     []string{"decode"},
+			Usage:       "Decode raw transaction from hex",
+			UsageText:   "wanutil decode [options]",
+			Description: "Decode a raw transaction from hex",
+			Action:      decodeTransaction,
+			Flags:       []cli.Flag{hexFlag},
 		},
 		{
 			Name:        "abiSignatures",
