@@ -1,7 +1,6 @@
 # wanutil
 #### CLI utility tool for Wanchain
 
-**WIP:** please note that development is in progress
 
 ## 1. Setup
 Fetch and build wanutil
